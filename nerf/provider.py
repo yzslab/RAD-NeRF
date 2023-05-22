@@ -391,8 +391,14 @@ class NeRFDataset:
             if self.opt.aud == '':
                 if 'esperanto' in self.opt.asr_model:
                     aud_features = np.load(os.path.join(self.root_path, 'aud_eo.npy'))
+                elif 'visemefix' in self.opt.asr_model:
+                    aud_features = np.load(os.path.join(self.root_path, 'aud_cn_visemefix.npy'))
+                elif self.opt.asr_model == 'jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn':
+                    aud_features = np.load(os.path.join(self.root_path, 'aud_cn.npy'))
                 elif 'deepspeech' in self.opt.asr_model:
                     aud_features = np.load(os.path.join(self.root_path, 'aud_ds.npy'))
+                elif 'hubert' in self.opt.asr_model:
+                    aud_features = np.load(os.path.join(self.root_path, 'aud_hubert.npy'))
                 else:
                     aud_features = np.load(os.path.join(self.root_path, 'aud.npy'))
             # cross-driven extracted features. 

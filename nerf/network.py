@@ -113,8 +113,14 @@ class NeRFNetwork(NeRFRenderer):
 
         if 'esperanto' in self.opt.asr_model:
             self.audio_in_dim = 44
+        elif 'visemefix' in self.opt.asr_model:
+            self.audio_in_dim = 109
+        elif self.opt.asr_model == 'jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn':
+            self.audio_in_dim = 3503
         elif 'deepspeech' in self.opt.asr_model:
             self.audio_in_dim = 29
+        elif 'hubert' in self.opt.asr_model:
+            self.audio_in_dim = 1024
         else:
             self.audio_in_dim = 32
             

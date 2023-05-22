@@ -47,8 +47,14 @@ class ASR:
 
         if 'esperanto' in self.opt.asr_model:
             self.audio_dim = 44
+        elif 'visemefix' in self.opt.asr_model:
+            self.audio_dim = 109
+        elif self.opt.asr_model == 'jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn':
+            self.audio_dim = 3503
         elif 'deepspeech' in self.opt.asr_model:
             self.audio_dim = 29
+        elif 'hubert' in self.opt.asr_model:
+            self.audio_dim = 1024
         else:
             self.audio_dim = 32
 
@@ -245,6 +251,10 @@ class ASR:
                 # save to a npy file
                 if 'esperanto' in self.opt.asr_model:
                     output_path = self.opt.asr_wav.replace('.wav', '_eo.npy')
+                elif 'visemefix' in self.opt.asr_model:
+                    output_path = self.opt.asr_wav.replace('.wav', '_cn_visemefix.npy')
+                elif self.opt.asr_model == 'jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn':
+                    output_path = self.opt.asr_wav.replace('.wav', '_cn.npy')
                 else:
                     output_path = self.opt.asr_wav.replace('.wav', '.npy')
                 np.save(output_path, unfold_feats.cpu().numpy())
