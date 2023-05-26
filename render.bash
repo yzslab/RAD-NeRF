@@ -1,5 +1,7 @@
 #!/bin/bash
-ASR_MODEL="cpierse/wav2vec2-large-xlsr-53-esperanto"
+if [ "${ASR_MODEL}" == "" ]; then
+    ASR_MODEL="cpierse/wav2vec2-large-xlsr-53-esperanto"
+fi
 
 if [ "${DATA}" == "" ] || [ "${NAME}" == "" ] || [ "${AUD}" == "" ]; then
   echo "DATA and NAME and AUD are required"
@@ -13,6 +15,7 @@ python main.py \
   --torso \
   --test \
   --test_train --data_range 0 1 \
+  --asr_model ${ASR_MODEL} \
   --aud "${AUD}" || exit 1
 ffmpeg \
   -i "$(ls -1rt logs/${NAME}_torso/results/*.mp4)" \
