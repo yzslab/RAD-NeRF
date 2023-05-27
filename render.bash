@@ -14,7 +14,7 @@ python main.py \
   -O \
   --torso \
   --test \
-  --test_train --data_range 0 1 \
+  --test_train \
   --asr_model ${ASR_MODEL} \
   --aud "${AUD}" || exit 1
 ffmpeg \
