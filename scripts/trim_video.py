@@ -1,5 +1,6 @@
 import os
 import argparse
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
 parser.add_argument("video")
@@ -7,9 +8,9 @@ args = parser.parse_args()
 
 base_dir = os.path.dirname(args.video)
 
+counter = 0
 with open(os.path.join(base_dir, "timestamps.txt"), "r") as f:
     with open(os.path.join(base_dir, "clips.txt"), "w") as c:
-        counter = 0
         while True:
             # read line by line from timestamps.txt
             timestamp = f.readline()
@@ -34,8 +35,7 @@ with open(os.path.join(base_dir, "timestamps.txt"), "r") as f:
 
             # create child process
             pid = os.fork()
-            if pid < 0:
-                exit(1)
+            assert pid >= 0, "error occurred when calling os.fork()"
 
             if pid > 0:
                 # parent process
@@ -43,9 +43,20 @@ with open(os.path.join(base_dir, "timestamps.txt"), "r") as f:
                 c.write("file '{}'\n".format(os.path.basename(output_path)))
                 counter += 1
             else:
+                # child process
+                # redirect stdout and stderr to file
+                logfile_fd = os.open(
+                    os.path.join(base_dir, os.path.basename(output_path) + ".log"),
+                    os.O_WRONLY | os.O_CREAT | os.O_TRUNC
+                )
+                os.dup2(logfile_fd, 1)
+                os.dup2(logfile_fd, 2)
+                # close stdin
+                os.close(0)
                 # run ffmpeg on child process
                 os.execvp("ffmpeg", [
                     "ffmpeg",
+                    "-nostdin",
                     "-i",
                     args.video,
                     "-ss",
@@ -59,16 +70,16 @@ with open(os.path.join(base_dir, "timestamps.txt"), "r") as f:
                     "-y",
                     output_path
                 ])
-                exit(1)
+                assert False, "error occurred when calling os.execvp()"
 
 # wait all ffmpeg finish processing video
-while True:
-    try:
-        pid, status = os.wait()
-        if status != 0:
-            exit(1)
-    except ChildProcessError:
-        break
+with tqdm(range(counter)) as t:
+    for i in t:
+        try:
+            pid, status = os.wait()
+            assert status == 0, "error occurred when creating clip"
+        except ChildProcessError:
+            break
 
 # merge clips
 os.chdir(base_dir)
