@@ -1,9 +1,15 @@
 #!/bin/bash
-ASR_MODEL="cpierse/wav2vec2-large-xlsr-53-esperanto"
+if [ "${ASR_MODEL}" == "" ]; then
+    ASR_MODEL="cpierse/wav2vec2-large-xlsr-53-esperanto"
+fi
 
 if [ "${DATA}" == "" ] || [ "${NAME}" == "" ]; then
   echo "DATA and NAME are required"
 fi
+
+echo "DATA=${DATA}
+NAME=${NAME}
+ASR_MODEL=${ASR_MODEL}"
 
 python main.py data/${DATA}/ \
   --workspace logs/${NAME}/ \
